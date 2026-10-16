@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mdclass:Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mdclass="http://g5.1c.ru/v8/dt/metadata/mdclass" xmlns:mdclassExtension="http://g5.1c.ru/v8/dt/metadata/mdclass/extension" uuid="d5d95e91-b4f0-41b4-be82-ab3b7c25bf3c">
+  <name>YAXUNIT_ERPUH</name>
+  <synonym>
+    <key>ru</key>
+    <value>YAXUNIT_ERPUH</value>
+  </synonym>
+  <objectBelonging>Adopted</objectBelonging>
+  <containedObjects classId="9cd510cd-abfc-11d4-9434-004095e12fc7" objectId="d68f8f77-93f2-4527-b4da-22d9d6777b3a"/>
+  <containedObjects classId="9fcd25a0-4822-11d4-9414-008048da11f9" objectId="67c32ede-7f6b-4c22-a764-c76975d71571"/>
+  <containedObjects classId="e3687481-0a87-462c-a166-9f34594f9bba" objectId="57850a15-47bb-46dc-9612-cde97ce2e6d0"/>
+  <containedObjects classId="9de14907-ec23-4a07-96f0-85521cb6b53b" objectId="4cf91340-f8c1-4f1f-858f-ab8df95af6c3"/>
+  <containedObjects classId="51f2d5d8-ea4d-4064-8892-82951750031e" objectId="cd998999-d3ee-4dc5-b93e-ede6de3c653b"/>
+  <containedObjects classId="e68182ea-4237-4383-967f-90c1e3370bc7" objectId="b7725588-31ca-4830-af3a-7ca5892e3d11"/>
+  <containedObjects classId="fb282519-d103-4dd3-bc12-cb271d631dfc" objectId="b04afc65-4da2-4eb2-80e5-aa389c869c9e"/>
+  <namePrefix>ОМ</namePrefix>
+  <configurationExtensionCompatibilityMode>8.3.27</configurationExtensionCompatibilityMode>
+  <configurationExtensionPurpose>AddOn</configurationExtensionPurpose>
+  <defaultRunMode>ManagedApplication</defaultRunMode>
+  <usePurposes>PersonalComputer</usePurposes>
+  <scriptVariant>Russian</scriptVariant>
+  <usedMobileApplicationFunctionalities>
+    <functionality>
+      <use>true</use>
+    </functionality>
+    <functionality>
+      <functionality>OSBackup</functionality>
+      <use>true</use>
+    </functionality>
+  </usedMobileApplicationFunctionalities>
+  <dataLockControlMode>Managed</dataLockControlMode>
+  <objectAutonumerationMode>NotAutoFree</objectAutonumerationMode>
+  <modalityUseMode>DontUse</modalityUseMode>
+  <synchronousPlatformExtensionAndAddInCallUseMode>DontUse</synchronousPlatformExtensionAndAddInCallUseMode>
+  <compatibilityMode>8.3.27</compatibilityMode>
+  <languages uuid="5fa97ac3-ddf9-453c-a24a-a611e2841bb5" extendedConfigurationObject="0663bf5b-bcba-4a40-a862-a0b3baa2d884">
+    <name>Русский</name>
+    <objectBelonging>Adopted</objectBelonging>
+    <extension xsi:type="mdclassExtension:LanguageExtension">
+      <extendedConfigurationObject>Checked</extendedConfigurationObject>
+      <languageCode>Checked</languageCode>
+    </extension>
+    <languageCode>ru</languageCode>
+  </languages>
+  <commonModules>CommonModule.ОМ_ОбщегоНазначения</commonModules>
+</mdclass:Configuration>

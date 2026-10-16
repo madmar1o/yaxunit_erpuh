@@ -1,0 +1,90 @@
+name: Проверка публикации расширения YAXUNIT_ERPUH
+
+# Проверяет то, что мы выкладываем в develop: состав расширения и отсутствие запрещённого содержимого.
+# Сама по себе проверка ничего не собирает — сборка .cfe требует вендорской базы и выполняется локально.
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'exts/yaxunit_erpuh/**'
+      - 'CHANGELOG.md'
+      - '.github/workflows/erpuh-publish-check.yml'
+
+  pull_request:
+    branches:
+      - develop
+    paths:
+      - 'exts/yaxunit_erpuh/**'
+      - 'CHANGELOG.md'
+      - '.github/workflows/erpuh-publish-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  publish-check:
+    name: Запрещённое содержимое и состав расширения
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Извлечение исходников
+        uses: actions/checkout@v4
+
+      - name: Проверка публикуемых исходников
+        shell: bash
+        run: |
+          set -uo pipefail
+          EXT=exts/yaxunit_erpuh
+          rc=0
+          fail() { echo "::error::$1"; rc=1; }
+
+          echo "== 1. Запрещённые типы файлов =="
+          bad=$(find "$EXT" -type f \( \
+              -iname '*.cf' -o -iname '*.cfe' -o -iname '*.dt' -o -iname '*.1cd' -o -iname '*.cd' \
+              -o -iname '*.epf' -o -iname '*.erf' -o -iname '*.zip' -o -iname '*.7z' -o -iname '*.rar' \
+              -o -iname '*.exe' -o -iname '*.dll' -o -iname '*.bin' -o -iname '*.lgd' -o -iname '*.lgp' \
+              -o -iname '*.pfl' -o -iname '*.mxl' \) || true)
+          [ -z "$bad" ] || fail "запрещённые файлы: $bad"
+
+          echo "== 2. Пути к базам, учётные данные, секреты =="
+          patterns='(--db-path=[^<]|/IBPath|Srvr=|Usr=|Pwd=|Ref=|\b[A-Za-z]:[\\/]|gho_[A-Za-z0-9]|ghp_[A-Za-z0-9]|ghs_[A-Za-z0-9]|github_pat_|-----BEGIN|password[[:space:]]*[:=]|passwd[[:space:]]*[:=]|пароль[[:space:]]*[:=]|token[[:space:]]*[:=])'
+          hits=$(grep -rInE "$patterns" "$EXT" CHANGELOG.md || true)
+          if [ -n "$hits" ]; then
+            fail "подозрительное содержимое:"
+            echo "$hits" | sed 's/^/    /'
+          fi
+
+          echo "== 3. Состав расширения по белому списку =="
+          extra=$(find "$EXT" -type f | grep -vE "^$EXT/(README\.md|GIT-FLOW\.md|\.project|\.settings/[^/]+|DT-INF/[^/]+|src/Configuration/Configuration\.mdo|src/CommonModules/[^/]+/(Module\.bsl|[^/]+\.mdo)|docs/[^/]+/[^/]+\.md)$" || true)
+          [ -z "$extra" ] || fail "неожиданные файлы в расширении: $extra"
+
+          echo "== 4. Структура проекта и имя расширения =="
+          for f in "$EXT/.project" "$EXT/DT-INF/PROJECT.PMF" "$EXT/src/Configuration/Configuration.mdo"; do
+            [ -f "$f" ] || fail "нет обязательного файла: $f"
+          done
+          grep -q '<name>YAXUNIT_ERPUH</name>' "$EXT/src/Configuration/Configuration.mdo" \
+            || fail "в Configuration.mdo нет имени расширения YAXUNIT_ERPUH"
+          grep -q 'V8ExtensionNature' "$EXT/.project" \
+            || fail "проект .project не объявлен расширением (нет V8ExtensionNature)"
+          grep -q 'configurationExtensionPurpose' "$EXT/src/Configuration/Configuration.mdo" \
+            || fail "в Configuration.mdo не задано назначение расширения"
+
+          echo "== 5. Внутри расширения нет модулей движка или кода конфигурации =="
+          alien=$(find "$EXT/src/CommonModules" -mindepth 1 -maxdepth 1 -type d ! -name 'ОМ_*' || true)
+          [ -z "$alien" ] || fail "в расширении есть модули с чужими именами: $alien"
+          declared=$(grep -c '<commonModules>' "$EXT/src/Configuration/Configuration.mdo" || true)
+          dirs=$(find "$EXT/src/CommonModules" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
+          [ "$declared" = "$dirs" ] \
+            || fail "состав модулей в Configuration.mdo ($declared) не совпадает с каталогами исходников ($dirs)"
+          bsl=$(find "$EXT/src" -name 'Module.bsl' | wc -l | tr -d ' ')
+          [ "$bsl" = "$dirs" ] \
+            || fail "файлов Module.bsl ($bsl) не столько же, сколько общих модулей ($dirs)"
+
+          echo "== 6. Итог =="
+          if [ "$rc" -ne 0 ]; then
+            echo "Проверка публикации НЕ пройдена"
+            exit 1
+          fi
+          echo "Проверка публикации пройдена: состав расширения ожидаемый, запрещённого содержимого нет"
