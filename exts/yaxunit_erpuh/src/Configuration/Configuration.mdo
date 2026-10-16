@@ -43,4 +43,5 @@
     <languageCode>ru</languageCode>
   </languages>
   <commonModules>CommonModule.ОМ_ОбщегоНазначения</commonModules>
+  <commonModules>CommonModule.ОМ_СтроковыеФункцииКлиентСервер</commonModules>
 </mdclass:Configuration>
