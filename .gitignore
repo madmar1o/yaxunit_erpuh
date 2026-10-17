@@ -44,3 +44,9 @@ workpath/
 *.log
 *.log.*.gz
 tools/mcp-test-runner/local-env-config.yml
+
+# Локальные EDT-проекты: лежат только на машине разработчика и в форк не публикуются.
+# Движок в форке — exts/yaxunit (upstream-версия), наше расширение — exts/yaxunit_erpuh.
+/YAxUnit/
+/YAXUNIT_ERPUH/
+/Smoke/
